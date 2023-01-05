@@ -1,0 +1,94 @@
+inventory = {
+    apples = {
+        weight = 0.5,
+        quantity = 5
+    },
+    bananas = {
+        weight = 0.25,
+        quantity = 10
+    },
+    grapes = {
+        weight = 0.1,
+        quantity = 20
+    }
+}
+
+max_weight = 100
+
+function display_inventory(inventory, max_weight)
+    print("Inventory:")
+    total_items = 0
+    total_weight = 0
+    for k, v in pairs(inventory) do
+        print(v.quantity, k, "(" .. v.weight*v.quantity .. " kg)")
+        total_items = total_items + v.quantity
+        total_weight = total_weight + v.weight*v.quantity
+    end
+    print("Total number of items: " .. total_items)
+    print("Total weight: " .. total_weight .. " / " .. max_weight .. " kg")
+end
+
+function add_item(inventory, item, quantity, weight)
+    if not inventory[item] then
+        inventory[item] = {
+            weight = weight,
+            quantity = quantity
+        }
+    else
+        inventory[item].quantity = inventory[item].quantity + quantity
+    end
+end
+
+function remove_item(inventory, item, quantity)
+    if inventory[item].quantity > quantity then
+        inventory[item].quantity = inventory[item].quantity - quantity
+    else
+        inventory[item] = nil
+    end
+end
+
+function list_commands()
+    print("Commands:")
+    print("display - Display the inventory")
+    print("add [item] [quantity] [weight] - Add a new item or increase the quantity of an existing item")
+    print("remove [item] [quantity] - Remove a certain quantity of an item or remove the item completely if the quantity is higher than the current quantity")
+    print("help - Display the list of commands")
+    print("exit - Exit the program")
+end
+
+function get_input()
+    print("Enter a command:")
+    return io.read()
+end
+
+function parse_input(input)
+    local parts = {}
+    for part in string.gmatch(input, "%S+") do
+        table.insert(parts, part)
+    end
+    return parts
+end
+
+list_commands()
+
+while true do
+    local input = get_input()
+    local parts = parse_input(input)
+    local command = parts[1]
+    if command == "display" then
+        display_inventory(inventory, max_weight)
+    elseif command == "add" then
+        local item = parts[2]
+        local quantity = tonumber(parts[3])
+        local weight = tonumber(parts[4])
+        add_item(inventory, item, quantity, weight)
+    elseif command == "remove" then
+        local item = parts[2]
+        local quantity = tonumber(parts[3])
+        remove_item(inventory, item, quantity)
+    elseif command == "help" then
+        list_commands()
+    elseif command == "exit" then
+        break
+    else
+        print
